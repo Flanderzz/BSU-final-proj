@@ -116,7 +116,9 @@ export default function Events() {
             </SelectContent>
           </Select>
         </div>
-        <Button className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">Create Event</Button>
+        <Button asChild className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">
+          <Link href="/events/create">Create Event</Link>
+        </Button>
       </div>
 
       {loading ? (
@@ -179,4 +181,3 @@ function EventCard({
     </div>
   )
 }
-

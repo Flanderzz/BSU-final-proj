@@ -54,7 +54,9 @@ export default function Resources() {
             </SelectContent>
           </Select>
         </div>
-        <Button className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">Upload Resource</Button>
+        <Button asChild className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">
+          <Link href="/resources/create">Upload Resource</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -80,4 +82,3 @@ function ResourceCard() {
     </div>
   )
 }
-

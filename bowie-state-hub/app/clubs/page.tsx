@@ -75,7 +75,9 @@ export default function Clubs() {
           value={searchQuery}
           onChange={handleSearchChange}
         />
-        <Button className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">Create Club</Button>
+        <Button asChild className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">
+          <Link href="/clubs/create">Create Club</Link>
+        </Button>
       </div>
 
       {loading ? (
@@ -134,4 +136,3 @@ function ClubCard({ club }: { club: Club }) {
     </div>
   )
 }
-

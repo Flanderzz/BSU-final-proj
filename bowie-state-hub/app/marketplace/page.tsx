@@ -111,7 +111,9 @@ export default function Marketplace() {
             </SelectContent>
           </Select>
         </div>
-        <Button className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">Post Item</Button>
+        <Button asChild className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">
+          <Link href="/marketplace/create">Post Item</Link>
+        </Button>
       </div>
 
       {loading ? (
@@ -174,4 +176,3 @@ function MarketplaceItemCard({
     </div>
   )
 }
-

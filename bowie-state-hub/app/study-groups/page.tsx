@@ -54,7 +54,9 @@ export default function StudyGroups() {
             </SelectContent>
           </Select>
         </div>
-        <Button className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">Create Study Group</Button>
+        <Button asChild className="bg-black text-yellow-400 hover:bg-gray-800 w-full md:w-auto">
+          <Link href="/study-groups/create">Create Study Group</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -80,4 +82,3 @@ function StudyGroupCard() {
     </div>
   )
 }
-

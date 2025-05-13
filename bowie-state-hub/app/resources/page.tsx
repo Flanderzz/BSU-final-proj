@@ -2,12 +2,23 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+
+type Resource = {
+  _id: string
+  title: string
+  description: string
+  subject: string
+  course?: string
+  resourceType: string
+  fileUrl: string
+  uploadedBy?: string
+}
 
 export default function Resources() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -22,6 +33,24 @@ export default function Resources() {
   const handleSubjectChange = (value: string) => {
     setSubject(value)
   }
+
+  const [resources, setResources] = useState<Resource[]>([])
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      const params = new URLSearchParams()
+      if (searchQuery) params.append("search", searchQuery)
+      if (subject) params.append("subject", subject)
+
+      const response = await fetch(`/api/resources?${params.toString()}`)
+      const data = await response.json()
+
+      setResources(data.resources)
+    }
+
+    fetchResources()
+  }, [searchQuery, subject])
+
 
   return (
     <div className="container mx-auto py-8">
@@ -60,25 +89,31 @@ export default function Resources() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((resource) => (
-          <ResourceCard key={resource} />
-        ))}
+      {resources.map((resource) => (
+        <ResourceCard key={resource._id} resource={resource} />
+      ))}
       </div>
     </div>
   )
 }
 
-function ResourceCard() {
+function ResourceCard({ resource }: { resource: Resource }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2">Resource Title</h3>
-        <p className="text-gray-600 mb-4">Subject: Computer Science</p>
+        <h3 className="text-xl font-semibold mb-2">{resource.title}</h3>
+        <p className="text-gray-600 mb-1">Subject: {resource.subject}</p>
+        <p className="text-sm text-gray-500 mb-4">{resource.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500">Uploaded by: John Doe</span>
-          <Button variant="outline">Download</Button>
+          <span className="text-sm text-gray-500">
+            Uploaded by: {resource.uploadedBy || "Anonymous"}
+          </span>
+          <Button asChild variant="outline">
+            <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer">Download</a>
+          </Button>
         </div>
       </div>
     </div>
   )
 }
+

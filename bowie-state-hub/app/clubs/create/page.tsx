@@ -54,10 +54,11 @@ function CreateClub() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify(clubData),
       })
-
+      
       const data = await response.json()
 
       if (response.ok) {

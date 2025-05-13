@@ -2,16 +2,26 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
+type StudyGroup = {
+  _id: string
+  name: string
+  course: string
+  description: string
+  maxMembers: number
+  members: string[] // or User[] later
+}
+
 export default function StudyGroups() {
   const [searchQuery, setSearchQuery] = useState("")
   const [course, setCourse] = useState<string | null>(null)
+  
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +32,31 @@ export default function StudyGroups() {
   const handleCourseChange = (value: string) => {
     setCourse(value)
   }
+
+  const [groups, setGroups] = useState<StudyGroup[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+  const fetchGroups = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (searchQuery) params.append("search", searchQuery)
+      if (course) params.append("course", course)
+
+      const res = await fetch(`/api/study-groups?${params.toString()}`)
+      const data = await res.json()
+      setGroups(data.groups)
+    } catch (err) {
+      console.error("Error fetching groups:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchGroups()
+}, [searchQuery, course])
+
 
   return (
     <div className="container mx-auto py-8">
@@ -60,25 +95,28 @@ export default function StudyGroups() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((group) => (
-          <StudyGroupCard key={group} />
-        ))}
+      {groups.map((group) => (
+        <StudyGroupCard key={group._id} group={group} />
+      ))}
       </div>
     </div>
   )
 }
 
-function StudyGroupCard() {
+function StudyGroupCard({ group }: { group: StudyGroup }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2">Study Group Name</h3>
-        <p className="text-gray-600 mb-4">Course: CS 201 - Data Structures</p>
+        <h3 className="text-xl font-semibold mb-2">{group.name}</h3>
+        <p className="text-gray-600 mb-4">Course: {group.course}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500">Members: 5/10</span>
+          <span className="text-sm text-gray-500">
+            Members: {group.members.length}/{group.maxMembers}
+          </span>
           <Button variant="outline">Join Group</Button>
         </div>
       </div>
     </div>
   )
 }
+

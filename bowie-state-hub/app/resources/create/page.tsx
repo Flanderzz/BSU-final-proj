@@ -43,30 +43,45 @@ function CreateResource() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+  
     try {
-      // In a real application, you would send this data to an API endpoint
-      // For now, we'll just simulate a successful creation
-
-      setTimeout(() => {
+      const token = localStorage.getItem("auth_token")
+  
+      const response = await fetch("/api/resources", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      })
+  
+      const data = await response.json()
+  
+      if (response.ok) {
         toast({
           title: "Resource Created",
           description: "Your study resource has been successfully uploaded.",
         })
-        // Redirect to the resources page
         router.push("/resources")
-      }, 1000)
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Something went wrong",
+          variant: "destructive",
+        })
+      }
     } catch (error) {
       console.error("Error creating resource:", error)
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }  
 
   return (
     <div className="flex flex-col min-h-screen">

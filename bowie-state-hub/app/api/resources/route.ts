@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongoose"
-import { Club } from "@/models/Club"
+import { Resource } from "@/models/Resource"
+import { NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
@@ -10,12 +10,14 @@ export async function GET(req: NextRequest) {
   const query: any = {}
 
   const search = searchParams.get("search")
-  if (search) {
-    query.name = { $regex: search, $options: "i" }
-  }
+  const subject = searchParams.get("subject")
 
-  const clubs = await Club.find(query)
-  return NextResponse.json({ clubs })
+  if (search) query.title = { $regex: search, $options: "i" }
+  if (subject) query.subject = subject
+
+  const resources = await Resource.find(query).sort({ createdAt: -1 })
+
+  return NextResponse.json({ resources })
 }
 
 export async function POST(req: NextRequest) {
@@ -32,17 +34,14 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
 
-    if (!body.name || !body.category) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
-    }
-
-    const club = await Club.create({
+    const resource = await Resource.create({
       ...body,
-      leaders: [user.id],
+      uploadedBy: user.id,
     })
 
-    return NextResponse.json({ club }, { status: 201 })
+    return NextResponse.json({ resource }, { status: 201 })
   } catch (err) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 })
+    console.error("POST /api/resources error:", err)
+    return NextResponse.json({ error: "Failed to create resource" }, { status: 500 })
   }
 }

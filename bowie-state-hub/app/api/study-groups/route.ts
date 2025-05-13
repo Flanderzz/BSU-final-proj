@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongoose"
-import { Club } from "@/models/Club"
+import { StudyGroup } from "@/models/StudyGroup"
 import { verifyToken } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
@@ -10,12 +10,13 @@ export async function GET(req: NextRequest) {
   const query: any = {}
 
   const search = searchParams.get("search")
-  if (search) {
-    query.name = { $regex: search, $options: "i" }
-  }
+  const course = searchParams.get("course")
 
-  const clubs = await Club.find(query)
-  return NextResponse.json({ clubs })
+  if (search) query.name = { $regex: search, $options: "i" }
+  if (course) query.course = course
+
+  const groups = await StudyGroup.find(query).sort({ createdAt: -1 })
+  return NextResponse.json({ groups })
 }
 
 export async function POST(req: NextRequest) {
@@ -32,17 +33,15 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
 
-    if (!body.name || !body.category) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
-    }
-
-    const club = await Club.create({
+    const group = await StudyGroup.create({
       ...body,
-      leaders: [user.id],
+      creator: user.id,
+      members: [user.id],
     })
 
-    return NextResponse.json({ club }, { status: 201 })
+    return NextResponse.json({ group }, { status: 201 })
   } catch (err) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 })
+    console.error("POST /api/study-groups error:", err)
+    return NextResponse.json({ error: "Invalid token or server error" }, { status: 500 })
   }
 }

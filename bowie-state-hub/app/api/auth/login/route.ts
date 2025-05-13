@@ -1,52 +1,26 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongoose";
+import { User } from "@/models/User";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@bsu.edu",
-    password: "password123",
-    role: "student",
-    major: "Computer Science",
-    graduationYear: 2025,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane.smith@bsu.edu",
-    password: "password456", 
-    role: "club_leader",
-    major: "Business Administration",
-    graduationYear: 2024,
-  },
-]
+const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json()
-    const { email, password } = body
+export async function POST(req: Request) {
+  await connectDB();
+  const { email, password } = await req.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
-    }
-
-    const user = users.find((u) => u.email === email)
-
-    if (!user || user.password !== password) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
-    }
-
-    const { password: _, ...userData } = user
-
-    return NextResponse.json({
-      success: true,
-      message: "Login successful",
-      user: userData,
-      token: "mock-jwt-token",
-    })
-  } catch (error) {
-    console.error("Error during login:", error)
-    return NextResponse.json({ error: "Login failed" }, { status: 500 })
+  const user = await User.findOne({ email });
+  if (!user) {
+    return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 });
   }
-}
 
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 });
+  }
+
+  const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+
+  return NextResponse.json({ success: true, token, user: { id: user._id, email: user.email, role: user.role } });
+}

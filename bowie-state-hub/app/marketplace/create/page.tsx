@@ -66,13 +66,16 @@ function CreateMarketplaceItem() {
       }
 
       // Send the data to the API
+      const token = localStorage.getItem("auth_token")
+
       const response = await fetch("/api/marketplace", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(itemData),
-      })
+      })      
 
       const data = await response.json()
 

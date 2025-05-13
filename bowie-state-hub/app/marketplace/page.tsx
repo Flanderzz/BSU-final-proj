@@ -11,18 +11,17 @@ import { ArrowLeft, Tag, Calendar, User } from "lucide-react"
 
 // Define the Item type
 type Item = {
-  id: number
+  _id: string
   title: string
   description: string
   price: number
   category: string
   condition: string
-  seller: {
-    id: number
+  seller?: {
     name: string
     email: string
   }
-  datePosted: string
+  createdAt: string
 }
 
 export default function Marketplace() {
@@ -128,7 +127,7 @@ export default function Marketplace() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item) => (
-            <MarketplaceItemCard key={item.id} item={item} formatDate={formatDate} />
+            <MarketplaceItemCard key={item._id} item={item} formatDate={formatDate} />
           ))}
         </div>
       )}
@@ -161,11 +160,11 @@ function MarketplaceItemCard({
           </div>
           <div className="flex items-center text-sm text-gray-500">
             <User className="h-4 w-4 mr-2" />
-            <span>Seller: {item.seller.name}</span>
+            <span>Seller: {item.seller?.name}</span>
           </div>
           <div className="flex items-center text-sm text-gray-500">
             <Calendar className="h-4 w-4 mr-2" />
-            <span>Posted: {formatDate(item.datePosted)}</span>
+            <span>Posted: {formatDate(item.createdAt)}</span>
           </div>
         </div>
 

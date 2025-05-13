@@ -11,7 +11,7 @@ import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react"
 
 // Define the Event type
 type Event = {
-  id: number
+  _id: string 
   title: string
   description: string
   date: string
@@ -133,7 +133,7 @@ export default function Events() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
-            <EventCard key={event.id} event={event} formatDate={formatDate} formatTime={formatTime} />
+            <EventCard key={event._id} event={event} formatDate={formatDate} formatTime={formatTime} />
           ))}
         </div>
       )}

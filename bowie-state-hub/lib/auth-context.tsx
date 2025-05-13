@@ -84,37 +84,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Signup function
+  // signup function
   const signup = async (userData: any) => {
     try {
-      // In a real app, you would call an API endpoint
-      // For this demo, we'll simulate a successful signup
-
-      // Create a fake user
-      const newUser = {
-        id: Math.floor(Math.random() * 1000),
-        name: userData.name,
-        email: userData.email,
-        role: userData.role || "student",
-        major: userData.major,
-        graduationYear: userData.graduationYear,
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      })
+  
+      const data = await response.json()
+  
+      if (response.ok) {
+        localStorage.setItem("auth_token", data.token)
+        localStorage.setItem("user", JSON.stringify(data.user))
+        setUser(data.user)
+        return { success: true }
+      } else {
+        return { success: false, error: data.error || "Signup failed" }
       }
-
-      // Create a fake token
-      const token = `fake-jwt-token-${Date.now()}`
-
-      // Store token and user data
-      localStorage.setItem("auth_token", token)
-      localStorage.setItem("user", JSON.stringify(newUser))
-      setUser(newUser)
-
-      return { success: true }
     } catch (error) {
       console.error("Signup error:", error)
       return { success: false, error: "An unexpected error occurred" }
     }
   }
-
+  
   // Logout function
   const logout = () => {
     localStorage.removeItem("auth_token")

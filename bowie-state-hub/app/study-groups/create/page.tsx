@@ -40,30 +40,34 @@ function CreateStudyGroup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+  
     try {
-      // In a real application, you would send this data to an API endpoint
-      // For now, we'll just simulate a successful creation
-
-      setTimeout(() => {
-        toast({
-          title: "Study Group Created",
-          description: "Your study group has been successfully created.",
-        })
-        // Redirect to the study groups page
+      const token = localStorage.getItem("auth_token")
+  
+      const response = await fetch("/api/study-groups", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      })
+  
+      const data = await response.json()
+  
+      if (response.ok) {
+        toast({ title: "Study Group Created", description: data.group.name })
         router.push("/study-groups")
-      }, 1000)
+      } else {
+        toast({ title: "Error", description: data.error || "Failed to create" })
+      }
     } catch (error) {
       console.error("Error creating study group:", error)
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      })
+      toast({ title: "Error", description: "Unexpected error", variant: "destructive" })
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }  
 
   return (
     <div className="flex flex-col min-h-screen">

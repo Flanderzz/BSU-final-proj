@@ -1,12 +1,13 @@
-import type React from "react"
+import type { ReactNode } from "react"
 import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const metadata = {
+  title: "Bowie State Student Hub",
+  description: "Campus events, clubs, marketplace and more.",
+}
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
@@ -15,11 +16,4 @@ export default function RootLayout({
     </html>
   )
 }
-
-
-
-import './globals.css'
-
-export const metadata = {
-      generator: 'v0.dev'
-    };
+``

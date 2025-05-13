@@ -10,10 +10,10 @@ import { ArrowLeft, Users, Clock, MapPin } from "lucide-react"
 
 // Define the Club type
 type Club = {
-  id: number
+  _id: string 
   name: string
   description: string
-  members: number
+  members: any[]
   category: string
   meetingTime: string
   location: string
@@ -92,7 +92,7 @@ export default function Clubs() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {clubs.map((club) => (
-            <ClubCard key={club.id} club={club} />
+            <ClubCard key={club._id} club={club} />
           ))}
         </div>
       )}

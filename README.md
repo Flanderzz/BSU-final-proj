@@ -1,1 +1,1 @@
-# BSU-final-proj (use npm install --legacy-peer-deps when trying to get this to run)
+# BSU-final-proj (use npm install --force when trying to get this to run)
